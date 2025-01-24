@@ -1,0 +1,76 @@
+<div class="chat-window">
+  <!-- Grup başlığı -->
+  <div class="chat-header">
+    <div class="group-info">
+      <h2>{{ group?.name }}</h2>
+      <p class="member-count">{{ group?.members?.length }} üye</p>
+    </div>
+    <button mat-icon-button (click)="toggleMembersList()" matTooltip="Üyeleri göster">
+      <mat-icon>people</mat-icon>
+    </button>
+  </div>
+
+  <!-- Mesaj listesi -->
+  <div class="messages-container" #messageContainer (scroll)="onScroll($event)">
+    <div class="loading-spinner" *ngIf="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <div class="message-list">
+      <div *ngFor="let message of messages" 
+           class="message" 
+           [class.own-message]="isOwnMessage(message)">
+        <div class="message-content">
+          <div class="message-header">
+            <span class="sender-name">{{ message.sender.username }}</span>
+            <span class="message-time">{{ getMessageTime(message.createdAt) }}</span>
+          </div>
+          <p>{{ message.content }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mesaj gönderme formu -->
+  <div class="message-form">
+    <mat-form-field appearance="outline" class="message-input">
+      <input matInput
+             [formControl]="messageInput"
+             placeholder="Mesajınızı yazın..."
+             (keyup.enter)="sendMessage()">
+    </mat-form-field>
+    <button mat-icon-button
+            color="primary"
+            (click)="sendMessage()"
+            [disabled]="!messageInput.value?.trim()">
+      <mat-icon>send</mat-icon>
+    </button>
+  </div>
+
+  <!-- Üye listesi -->
+  <div class="members-list" *ngIf="showMembersList">
+    <div class="members-section">
+      <h3>Çevrimiçi ({{ getOnlineMembers().length }})</h3>
+      <mat-list>
+        <mat-list-item *ngFor="let member of getOnlineMembers()">
+          <div class="member-item">
+            <span class="status-indicator online"></span>
+            <span class="member-name">{{ member.username }}</span>
+          </div>
+        </mat-list-item>
+      </mat-list>
+    </div>
+
+    <div class="members-section">
+      <h3>Çevrimdışı ({{ getOfflineMembers().length }})</h3>
+      <mat-list>
+        <mat-list-item *ngFor="let member of getOfflineMembers()">
+          <div class="member-item">
+            <span class="status-indicator"></span>
+            <span class="member-name">{{ member.username }}</span>
+          </div>
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </div>
+</div>

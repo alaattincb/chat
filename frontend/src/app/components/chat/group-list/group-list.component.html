@@ -1,0 +1,104 @@
+<div class="groups-container">
+  <div class="groups-header">
+    <h2>Gruplar</h2>
+    <div class="actions">
+      <button mat-raised-button 
+              color="primary" 
+              class="create-group-btn"
+              (click)="toggleCreateForm()"
+              *ngIf="!showCreateForm">
+        <mat-icon>add</mat-icon>
+        Yeni Grup Oluştur
+      </button>
+    </div>
+  </div>
+
+  <div class="create-group-form" *ngIf="showCreateForm">
+    <form [formGroup]="createGroupForm" (ngSubmit)="createGroup()">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Grup Adı</mat-label>
+        <input matInput formControlName="name" placeholder="Grup adı girin...">
+        <mat-error *ngIf="createGroupForm.get('name')?.hasError('required')">
+          Grup adı gereklidir
+        </mat-error>
+        <mat-error *ngIf="createGroupForm.get('name')?.hasError('minlength')">
+          Grup adı en az 3 karakter olmalıdır
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Açıklama</mat-label>
+        <textarea matInput 
+                  formControlName="description" 
+                  placeholder="Grup açıklaması girin..."
+                  rows="3">
+        </textarea>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-button 
+                type="button"
+                (click)="toggleCreateForm()">
+          İptal
+        </button>
+        <button mat-raised-button 
+                color="primary" 
+                type="submit"
+                [disabled]="createGroupForm.invalid || loading">
+          <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+          <span *ngIf="!loading">Oluştur</span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="groups-list" *ngIf="!loading; else loadingSpinner">
+    <mat-nav-list>
+      <a mat-list-item *ngFor="let group of groups"
+         [routerLink]="['/groups', group._id]"
+         class="group-item">
+        <div class="group-avatar">
+          <div class="avatar-placeholder">
+            {{ group.name.charAt(0).toUpperCase() }}
+          </div>
+        </div>
+        <div class="group-info">
+          <div class="group-name">
+            <h3>{{ group.name }}</h3>
+            <span class="admin-badge" *ngIf="isGroupAdmin(group)">
+              <mat-icon>people</mat-icon>
+              Yönetici
+            </span>
+          </div>
+          <p class="group-description" *ngIf="group.description">
+            {{ group.description }}
+          </p>
+          <div class="group-stats">
+            <span class="member-count">
+              {{ getMemberCount(group) }} üye
+            </span>
+            <span class="online-count">
+              {{ getOnlineMemberCount(group) }} çevrimiçi
+            </span>
+          </div>
+        </div>
+      </a>
+    </mat-nav-list>
+
+    <div class="no-groups" *ngIf="groups.length === 0">
+      <mat-icon>groups</mat-icon>
+      <p>Henüz hiç grup yok</p>
+      <button mat-raised-button 
+              color="primary"
+              (click)="toggleCreateForm()">
+        Yeni Grup Oluştur
+      </button>
+    </div>
+  </div>
+
+  <ng-template #loadingSpinner>
+    <div class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  </ng-template>
+</div>

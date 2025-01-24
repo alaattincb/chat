@@ -1,0 +1,60 @@
+<div class="chat-window">
+  <!-- Sohbet başlığı -->
+  <div class="chat-header" *ngIf="recipient">
+    <div class="user-info">
+      <div class="avatar-circle">
+        {{ recipient.username.charAt(0).toUpperCase() }}
+      </div>
+      <div class="user-details">
+        <h3>{{ recipient.username }}</h3>
+        <span class="status" [class.online]="recipient.isOnline">
+          {{ recipient.isOnline ? 'Çevrimiçi' : 'Çevrimdışı' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mesaj listesi -->
+  <div class="message-container" 
+       #messageContainer
+       (scroll)="onScroll($event)">
+    <!-- Yükleniyor göstergesi -->
+    <div class="loading-messages" *ngIf="loading">
+      <mat-spinner diameter="30"></mat-spinner>
+    </div>
+
+    <!-- Mesajlar -->
+    <div class="messages">
+      <div *ngFor="let message of messages" 
+           class="message"
+           [class.sent]="isOwnMessage(message)"
+           [class.received]="!isOwnMessage(message)">
+        <div class="message-content">
+          {{ message.content }}
+          <span class="message-time">{{ getMessageTime(message.createdAt) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mesaj yok uyarısı -->
+    <div class="no-messages" *ngIf="messages.length === 0 && !loading">
+      <mat-icon>chat</mat-icon>
+      <p>Henüz mesaj yok. Sohbete başlamak için mesaj gönderin.</p>
+    </div>
+  </div>
+
+  <!-- Mesaj gönderme alanı -->
+  <div class="message-input">
+    <mat-form-field appearance="outline" class="w-100">
+      <input matInput
+             [formControl]="messageInput"
+             placeholder="Mesajınızı yazın..."
+             (keyup.enter)="sendMessage()">
+      <button mat-icon-button matSuffix
+              [disabled]="!messageInput.value?.trim()"
+              (click)="sendMessage()">
+        <mat-icon>send</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+</div> 

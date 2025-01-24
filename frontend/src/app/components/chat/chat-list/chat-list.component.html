@@ -1,0 +1,42 @@
+<div class="chat-list-container">
+  <mat-form-field class="search-field">
+    <mat-label>Kullanıcı Ara</mat-label>
+    <input matInput [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" placeholder="Kullanıcı adı girin...">
+    <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''; onSearch()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <button matSuffix mat-icon-button aria-label="Search" (click)="onSearch()">
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <div class="users-list" *ngIf="!loading; else loadingSpinner">
+    <mat-nav-list>
+      <a mat-list-item *ngFor="let user of users" [routerLink]="['/chat', user._id]" class="user-item">
+        <div class="user-avatar">
+          <div class="avatar-placeholder">
+            {{ user.username.charAt(0).toUpperCase() }}
+          </div>
+          <div class="status-indicator" [class.online]="user.isOnline"></div>
+        </div>
+        <div class="user-info">
+          <span class="username">{{ user.username }}</span>
+          <span class="last-seen" *ngIf="!user.isOnline">
+            {{ getLastSeenText(user.lastSeen) }}
+          </span>
+        </div>
+      </a>
+    </mat-nav-list>
+    
+    <div *ngIf="users.length === 0" class="no-users">
+      <mat-icon>sentiment_dissatisfied</mat-icon>
+      <p>Kullanıcı bulunamadı</p>
+    </div>
+  </div>
+
+  <ng-template #loadingSpinner>
+    <div class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  </ng-template>
+</div> 
